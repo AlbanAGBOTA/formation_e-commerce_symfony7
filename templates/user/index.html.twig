@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateurs!{% endblock %}
+
+{% block body %}
+<div class="container">
+    <br><br>
+    <h1>Les utilisateurs</h1><br><br>
+    <table class="table">
+        <tr>
+            <th>id</th>
+            <th>email</th>
+            <th>nom</th>
+            <th>prénom</th>
+            <th>roles</th>
+            <th>actions</th>
+        </tr>
+        {% for user in users %}
+            <tr>
+                <td>{{user.id}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.firstName}}</td>
+                <td>{{user.lastName}}</td>
+                <td>
+                {% if ('ROLE_ADMIN' in user.roles) %}
+                    <span class="text-primary">administrateur</span>
+                {% elseif ('ROLE_EDITOR' in user.roles) %}
+                     <span class="text-success">éditor</span>
+                {% else %}
+                    <span class="text-secondary">client</span>
+                {% endif %}
+                    {# {% for role in user.roles %}
+                        {{role}}
+                {% endfor %} #}
+                 </td>
+                <td>
+                    {# {% if 'ROLE_ADMIN' not in user.roles %} #}
+                         {% if 'ROLE_EDITOR' not in user.roles %}
+                             <a onclick="return confirm('Voulez-vous vraiment affecter ce rôle éditeur à cet utilisateur ?')" class="btn btn-outline-primary" href="{{path('app_user_editor', {'id':user.id})}}" > Ajouter comme éditeur</a> ||
+                             {% else %}
+                              <a onclick="return confirm('voulez-vous vraiment retiré ce role éditeur a cet utilisateur ?')" class="btn btn-danger" href="{{path('app_user_remove_editor_role', {'id':user.id})}}"> Retiré le role éditeur</a> ||
+                        {% endif %}
+
+                        <a onclick="return confirm('Voulez-vous vraiment supprimer ?')" href="{{ path('app_user_remove', {'id': user.id}) }}" class="btn btn-danger">Supprimer</a>
+                         {# {% endif %} #}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}
