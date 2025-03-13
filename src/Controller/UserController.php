@@ -39,6 +39,7 @@ final class UserController extends AbstractController
         $user->setRoles(['ROLE_USER']);
         $entityManager->flush();
 
+
         $this->addFlash(type:'danger', message:'le role éditor a été retiré a votre utilisateur');
 
         return $this->redirectToRoute('app_user');
