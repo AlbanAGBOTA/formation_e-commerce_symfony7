@@ -42,6 +42,7 @@ security:
          - { path: ^/editor, roles: ROLE_EDITOR }
 
 
+
 when@test:
     security:
         password_hashers:

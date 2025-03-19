@@ -22,38 +22,38 @@ final class UserController extends AbstractController
 
     //Cette fonction permet de changer le role utilisateurs et les editors
     #[Route('/admin/user/{id}/to/editor', name: 'app_user_editor')]
-    public function changeRole(EntityManagerInterface $entityManager, User $user):Response
+    public function changeRole(EntityManagerInterface $entityManager, User $user): Response
     {
         $user->setRoles(["ROLE_ADMIN", "ROLE_EDITOR"]);
         $entityManager->flush();
 
-        $this->addFlash(type:'success', message:'le role éditor a été ajouté a votre utilisateur');
+        $this->addFlash(type: 'success', message: 'le role éditor a été ajouté a votre utilisateur');
 
         return $this->redirectToRoute('app_user');
     }
 
     //Cette fonction permet de retirer le role utilisateurs et les editors
     #[Route('/admin/user/{id}/remove/editor/role', name: 'app_user_remove_editor_role')]
-    public function editorRoleRemove(EntityManagerInterface $entityManager, User $user):Response
+    public function editorRoleRemove(EntityManagerInterface $entityManager, User $user): Response
     {
         $user->setRoles(['ROLE_USER']);
         $entityManager->flush();
 
 
-        $this->addFlash(type:'danger', message:'le role éditor a été retiré a votre utilisateur');
+        $this->addFlash(type: 'danger', message: 'le role éditor a été retiré a votre utilisateur');
 
         return $this->redirectToRoute('app_user');
     }
 
     //Cette fonction permet de supprimer les utilisateurs
     #[Route('/admin/user/{id}/remove', name: 'app_user_remove')]
-    public function RemoveUser(EntityManagerInterface $entityManager, $id, UserRepository $userRepository):Response
+    public function RemoveUser(EntityManagerInterface $entityManager, $id, UserRepository $userRepository): Response
     {
         $userFind = $userRepository->find($id);
         $entityManager->remove($userFind);
         $entityManager->flush();
 
-        $this->addFlash(type:'danger', message:'votre utilisateur a été supprimer');
+        $this->addFlash(type: 'danger', message: 'votre utilisateur a été supprimer');
 
         return $this->redirectToRoute('app_user');
     }

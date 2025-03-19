@@ -16,7 +16,7 @@ class Product
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique:true)]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -26,17 +26,27 @@ class Product
     private ?int $price = null;
 
     /**
-     * @var Collection<int, subCategory>
+     * @var Collection<int, SubCategory>
      */
-    #[ORM\ManyToMany(targetEntity: subCategory::class, inversedBy: 'products')]
+    #[ORM\ManyToMany(targetEntity: SubCategory::class, inversedBy: 'products')]
     private Collection $subCategories;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
+    #[ORM\Column]
+    private ?int $stock = null;
+
+    /**
+     * @var Collection<int, AddProductHistory>
+     */
+    #[ORM\OneToMany(targetEntity: AddProductHistory::class, mappedBy: 'product')]
+    private Collection $addProductHistories;
+
     public function __construct()
     {
         $this->subCategories = new ArrayCollection();
+        $this->addProductHistories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -81,14 +91,14 @@ class Product
     }
 
     /**
-     * @return Collection<int, subCategory>
+     * @return Collection<int, SubCategory>
      */
     public function getSubCategories(): Collection
     {
         return $this->subCategories;
     }
 
-    public function addSubCategory(subCategory $subCategory): static
+    public function addSubCategory(SubCategory $subCategory): static
     {
         if (!$this->subCategories->contains($subCategory)) {
             $this->subCategories->add($subCategory);
@@ -97,7 +107,7 @@ class Product
         return $this;
     }
 
-    public function removeSubCategory(subCategory $subCategory): static
+    public function removeSubCategory(SubCategory $subCategory): static
     {
         $this->subCategories->removeElement($subCategory);
 
@@ -112,6 +122,48 @@ class Product
     public function setImage(?string $image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(int $stock): static
+    {
+        $this->stock = $stock;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AddProductHistory>
+     */
+    public function getAddProductHistories(): Collection
+    {
+        return $this->addProductHistories;
+    }
+
+    public function addAddProductHistory(AddProductHistory $addProductHistory): static
+    {
+        if (!$this->addProductHistories->contains($addProductHistory)) {
+            $this->addProductHistories->add($addProductHistory);
+            $addProductHistory->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddProductHistory(AddProductHistory $addProductHistory): static
+    {
+        if ($this->addProductHistories->removeElement($addProductHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($addProductHistory->getProduct() === $this) {
+                $addProductHistory->setProduct(null);
+            }
+        }
 
         return $this;
     }

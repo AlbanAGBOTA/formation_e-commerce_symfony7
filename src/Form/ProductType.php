@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Product;
-use App\Entity\subCategory;
+use App\Entity\SubCategory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -19,6 +19,7 @@ class ProductType extends AbstractType
             ->add('name')
             ->add('description')
             ->add('price')
+            ->add('stock')
             ->add('image', FileType::class, [
                 'label' => 'image de produit',
                 'mapped' => false,

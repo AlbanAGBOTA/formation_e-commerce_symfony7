@@ -71,7 +71,7 @@ final class SubCategoryController extends AbstractController
     #[Route('/{id}', name: 'app_sub_category_delete', methods: ['POST'])]
     public function delete(Request $request, SubCategory $subCategory, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$subCategory->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $subCategory->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($subCategory);
             $entityManager->flush();
         }
