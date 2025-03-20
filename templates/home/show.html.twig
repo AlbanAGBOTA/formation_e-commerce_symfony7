@@ -14,7 +14,7 @@
                     <h1 class="card-title text-success">{{product.name}}</h1>
                     <p class="card-text">{{product.description}}</p>
                     <h3>{{product.price}} FCFA</h3>
-                    <a class=" text-success" href="">Ajouter au panier</a>
+                    <a class=" text-success text-decoration-none" href="{{path('app_cart_new',{'id':product.id})}}">Ajouter au panier</a>
                     {# <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p> #}
                 </div>
             </div>
@@ -33,7 +33,7 @@
                     </a>
                     <p class="card-text">{{product.description|slice(0,50)}}</p>
                     <h3>{{product.price}} FCFA</h3>
-                    <a href="" class="text-success">Ajouter au panier</a>
+                    <a href="{{path('app_cart_new',{'id':product.id})}}" class="text-success text-decoration-none">Ajouter au panier</a>
                 </div>
             </div>
         </div>

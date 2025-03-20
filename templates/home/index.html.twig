@@ -16,7 +16,7 @@
                     </a>
                     <p class="card-text">{{product.description|slice(0,50)}}</p>
                     <h3>{{product.price}} FCFA</h3>
-                    <a href="" class="text-success">Ajouter au panier</a>
+                    <a href="{{path('app_cart_new',{'id':product.id})}}" class="text-success text-decoration-none">Ajouter au panier</a>
                 </div>
             </div>
         </div>
