@@ -10,6 +10,7 @@ use App\Entity\Order;
 use App\Form\OrderType;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use App\Entity\City;
 
 final class OrderController extends AbstractController
 {
@@ -39,5 +40,13 @@ final class OrderController extends AbstractController
             'form' => $form->createView(),
             'total' => $total
         ]);
+    }
+
+    #[Route('/city/{id}/shipping/cost', name: 'app_city_shipping_cost')]
+    public function cityShippingCost(City $city): Response
+    {
+        //dd($city);
+        $cityShippingPrice = $city->getShippingCost();
+        return new Response(json_encode(['status' => 200, 'message' => 'ok', 'content' => $cityShippingPrice]));
     }
 }
