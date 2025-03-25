@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
@@ -31,6 +33,23 @@ class Order
 
     #[ORM\ManyToOne(inversedBy: 'orders')]
     private ?City $city = null;
+
+    #[ORM\Column]
+    private ?bool $payOneDelivery = null;
+
+    /**
+     * @var Collection<int, OrderProduct>
+     */
+    #[ORM\OneToMany(targetEntity: OrderProduct::class, mappedBy: '_order', orphanRemoval: true)]
+    private Collection $orderProducts;
+
+    #[ORM\Column]
+    private ?float $totalPrice = null;
+
+    public function __construct()
+    {
+        $this->orderProducts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -107,6 +126,60 @@ class Order
     public function setCity(?City $city): static
     {
         $this->city = $city;
+
+        return $this;
+    }
+
+    public function isPayOneDelivery(): ?bool
+    {
+        return $this->payOneDelivery;
+    }
+
+    public function setPayOneDelivery(bool $payOneDelivery): static
+    {
+        $this->payOneDelivery = $payOneDelivery;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, OrderProduct>
+     */
+    public function getOrderProducts(): Collection
+    {
+        return $this->orderProducts;
+    }
+
+    public function addOrderProduct(OrderProduct $orderProduct): static
+    {
+        if (!$this->orderProducts->contains($orderProduct)) {
+            $this->orderProducts->add($orderProduct);
+            $orderProduct->setOrder($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrderProduct(OrderProduct $orderProduct): static
+    {
+        if ($this->orderProducts->removeElement($orderProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($orderProduct->getOrder() === $this) {
+                $orderProduct->setOrder(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTotalPrice(): ?float
+    {
+        return $this->totalPrice;
+    }
+
+    public function setTotalPrice(float $totalPrice): static
+    {
+        $this->totalPrice = $totalPrice;
 
         return $this;
     }

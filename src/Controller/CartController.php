@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\ProductRepository;
+use App\Service\Cart;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -14,26 +15,32 @@ final class CartController extends AbstractController
 
     //Cette route permette de recuperer les produits de la panier
     #[Route('/cart', name: 'app_cart', methods: ['GET'])]
-    public function index(SessionInterface $session): Response
+    public function index(SessionInterface $session, Cart $cart): Response
     {
         //Remplire le panier d'achat du produit
-        $cart = $session->get('cart', []);
-        $cartWhitData = [];
-        foreach ($cart as $id => $quantity) {
-            $cartWhitData[] = [
-                'product' => $this->productRepository->find($id),
-                'quantity' => $quantity
-            ];
-        }
-        //Renvoyer a l'utilsateur le pri total
-        $total = array_sum(array_map(function ($item) {
-            return $item['product']->getPrice() * $item['quantity'];
-        }, $cartWhitData));
+        $data = $cart->getCart($session);
+
+
+
+
+
+        // $cart = $session->get('cart', []);
+        // $cartWhitData = [];
+        // foreach ($cart as $id => $quantity) {
+        //     $cartWhitData[] = [
+        //         'product' => $this->productRepository->find($id),
+        //         'quantity' => $quantity
+        //     ];
+        // }
+        // //Renvoyer a l'utilsateur le pri total
+        // $total = array_sum(array_map(function ($item) {
+        //     return $item['product']->getPrice() * $item['quantity'];
+        // }, $cartWhitData));
         //dd($total);
 
         return $this->render('cart/index.html.twig', [
-            'items' => $cartWhitData,
-            'total' => $total
+            'items' => $data['cart'],
+            'total' => $data['total']
         ]);
     }
 
