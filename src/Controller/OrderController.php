@@ -25,21 +25,6 @@ final class OrderController extends AbstractController
         // Récupérer le panier d'achat depuis la session
         $data = $cart->getCart($session);
 
-
-
-        // $cart = $session->get('cart', []);
-        // $cartWhitData = [];
-        // foreach ($cart as $id => $quantity) {
-        //     $cartWhitData[] = [
-        //         'product' => $productRepository->find($id),
-        //         'quantity' => $quantity
-        //     ];
-        // }
-        // // Calculer le prix total
-        // $total = array_sum(array_map(function ($item) {
-        //     return $item['product']->getPrice() * $item['quantity'];
-        // }, $cartWhitData));
-
         // Création du formulaire de commande
         $order = new Order();
         $form = $this->createForm(OrderType::class, $order);
@@ -79,7 +64,7 @@ final class OrderController extends AbstractController
     #[Route('/editor/order', name: 'app_orders_show')]
     public function getAllOrder(OrderRepository $orderRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $data = $orderRepository->findBy([], ['id'=>'DESC']);
+        $data = $orderRepository->findBy([], ['id' => 'DESC']);
         //dd($order);
         $order = $paginator->paginate(
             $data,
@@ -91,6 +76,31 @@ final class OrderController extends AbstractController
             'orders' => $order
         ]);
     }
+
+
+    #[Route('/editor/order/{id}/is-completed/update', name: 'app_orders_is_completed_update')]
+    public function isCompletedUpdate($id, OrderRepository $orderRepository, EntityManagerInterface $entityManager): Response
+    {
+        $order = $orderRepository->find($id);
+        $order->setIsCompleted(true);
+        $entityManager->flush();
+        $this->addFlash(type: 'success', message: 'votre modiffication effectuée');
+
+        return $this->redirectToRoute('app_orders_show');
+    }
+
+
+    #[Route('/editor/order/{id}/remove', name: 'app_orders_remove')]
+    public function removeOrder(Order $order, EntityManagerInterface $entityManager): Response
+    {
+        $entityManager->remove($order);
+        $entityManager->flush();
+
+        $this->addFlash(type: 'danger', message: 'votre commande a été supprimée');
+
+        return $this->redirectToRoute('app_orders_show');
+    }
+
 
 
     #[Route('/order-ok-message', name: 'order-ok-message')]
