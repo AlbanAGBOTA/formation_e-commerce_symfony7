@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<div class="container">
+    <h1>Les commandes</h1>
+    {% for order in orders %}
+    <h3>Commande n°:{{order.id}}</h3>
+    <span>Informations du clients</span>
+    <table class="table table-bordered">
+        <tr>
+            <th>Nom</th>
+            <th>Prenom</th>
+            <th>Téléphone</th>
+            <th>Adrésse</th>
+            <th>Ville</th>
+        </tr>
+
+        <tr>
+            <td>{{order.firstName}}</td>
+            <td>{{order.lastName}}</td>
+            <td>{{order.phone}}</td>
+            <td>{{order.adresse}}</td>
+            <td>{{order.city.name}}</td>
+        </tr>
+    </table>
+    <span>Corps de la commande</span>
+        <table class="table table-bordered">
+            <tr>
+                <th>Image du produit</th>
+                <th>Nom du produit</th>
+                <th>Description</th>
+                <th>Prix unitaire</th>
+                <th>Quantité</th>
+                <th>Prix total</th>
+            </tr>
+            {% for product in order.orderProducts %}
+                <tr>
+                    <td> <img style="width: 80px" src="{{ asset('uploads/images/'~ product.product.image) }}" alt="" > </td>
+                    <td>{{product.product.name}}</td>
+                    <td>{{product.product.description|slice(0,200)}}</td>
+                    <td>{{product.product.price}}</td>
+                    <td>{{product.qte}}</td>
+                    <td>{{product.product.price * product.qte}}</td>
+                </tr>
+                
+            {% endfor %}
+        </table>
+         <span>Frais de livraison : {{order.city.shippingCost}} fcfa</span>
+        <h5>Total à payer : {{order.totalPrice}} fcfa</h5>
+        <a href="" class="btn btn-outline-primary col-2 m-lg-1">Marquer comme livrée</a>
+        <a href="" class="btn btn-outline-danger col-2 m-lg-1">Supprimer la commande</a>
+       <br><br>
+    {% endfor %}
+
+        {{ knp_pagination_render(orders, 'layout/pagination_template.html.twig') }}
+
+
+</div>
+
+{% endblock %}

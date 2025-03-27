@@ -12,8 +12,10 @@ use App\Form\OrderType;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\City;
+use App\Repository\OrderRepository;
 use App\Service\Cart;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 
 final class OrderController extends AbstractController
 {
@@ -73,9 +75,26 @@ final class OrderController extends AbstractController
             'total' => $data['total'],
         ]);
     }
+    //Cette fonction permette d'afficher les commandes a l'éditor et administrateur
+    #[Route('/editor/order', name: 'app_orders_show')]
+    public function getAllOrder(OrderRepository $orderRepository, Request $request, PaginatorInterface $paginator): Response
+    {
+        $data = $orderRepository->findBy([], ['id'=>'DESC']);
+        //dd($order);
+        $order = $paginator->paginate(
+            $data,
+            $request->query->getInt('page', default: 1),
+            limit: 10
+        );
 
-    #[Route('/order-ok-message', name:'order-ok-message')]
-    public function orderMessage():Response
+        return $this->render('order/order.html.twig', [
+            'orders' => $order
+        ]);
+    }
+
+
+    #[Route('/order-ok-message', name: 'order-ok-message')]
+    public function orderMessage(): Response
     {
         return $this->render('order/order_message.html.twig');
     }
