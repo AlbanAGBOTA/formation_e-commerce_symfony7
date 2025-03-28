@@ -1,0 +1,66 @@
+<style>
+    table{
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td{
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    thead{
+        background: #f2f2f2;
+    }
+    tbody tr:nth-child(odd){
+        background: #f9f9f9;
+
+    }
+</style>
+
+<div class="container"><br>
+    <h2>Facture n°:{{order.id}}</h2>
+    <hr>
+        <span>Date de la commande : {{order.createdAt|date}}</span>
+    <br></br>
+            <span>Informations du clients</span>
+    <br></br>
+    <table class="table table-bordered">
+        <thead>
+            <th>Nom</th>
+            <th>Prenom</th>
+            <th>Téléphone</th>
+            <th>Adrésse</th>
+            <th>Ville</th>
+        </thead>
+
+        <tr>
+            <td>{{order.firstName}}</td>
+            <td>{{order.lastName}}</td>
+            <td>{{order.phone}}</td>
+            <td>{{order.adresse}}</td>
+            <td>{{order.city.name}}</td>
+        </tr>
+    </table>
+    <h2>Corps de la commande</h2>
+    <table class="table table-bordered">
+        <thead>
+            <th>Nom du produit</th>
+            <th>Prix unitaire</th>
+            <th>Quantité</th>
+            <th>Prix total</th>
+        </thead>
+        {% for product in order.orderProducts %}
+        <tr>
+            <td>{{product.product.name}}</td>
+            <td>{{product.product.price}}</td>
+            <td>{{product.qte}}</td>
+            <td>{{product.product.price * product.qte}}</td>
+        </tr>
+
+        {% endfor %}
+    </table><br>
+    <span>Frais de livraison : {{order.city.shippingCost}} fcfa</span>
+    <hr>
+    <h2>Total à payer : {{order.totalPrice}} fcfa</h2>
+        <br><br>
+</div>

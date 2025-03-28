@@ -9,7 +9,7 @@
         {% for product in products %}
         <div class="col-md-3 mt-4">
             <div class="card" style="width: 18rem;">
-                <img src="{{ asset('uploads/images/'~ product.image) }}" class="card-img-top" alt="...">
+                <img  src="{{ asset('uploads/images/'~ product.image) }}" class="card-img-top" alt="...">
                 <div class="card-body">
                     <a style="text-decoration : none; color : green" href=" {{ path('app_home_product_show', {'id':product.id} ) }} ">
                         <h5 class="card-title">{{product.name}}</h5>

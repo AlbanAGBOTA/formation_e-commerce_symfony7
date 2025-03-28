@@ -56,6 +56,8 @@
     </table>
     <span>Frais de livraison : {{order.city.shippingCost}} fcfa</span>
     <h5>Total à payer : {{order.totalPrice}} fcfa</h5>
+        <a href="{{path('app_facture',{'id': order.id})}}" class="btn btn-outline-success">Imprimer la facture</a>
+
     {% if order.isCompleted != true %}
         <a href="{{path('app_orders_is_completed_update',{'id': order.id})}}" class="btn btn-outline-primary col-2 m-lg-1">Marquer comme livrée</a>
     {% endif %}
