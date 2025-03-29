@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\OrderProduct;
+use App\Service\StripePayment;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Order;
@@ -16,12 +18,21 @@ use App\Repository\OrderRepository;
 use App\Service\Cart;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Mailer\MailerInterface;
 
 final class OrderController extends AbstractController
 {
+    public function __construct(private MailerInterface $mailer) {}
+
     #[Route('/order', name: 'app_order')]
-    public function index(Request $request, SessionInterface $session, ProductRepository $productRepository, EntityManagerInterface $entityManager, Cart $cart): Response
-    {
+    public function index(
+        Request $request,
+        SessionInterface $session,
+        ProductRepository $productRepository,
+        EntityManagerInterface $entityManager,
+        Cart $cart,
+        OrderRepository $orderRepository
+    ): Response {
         // Récupérer le panier d'achat depuis la session
         $data = $cart->getCart($session);
 
@@ -51,8 +62,30 @@ final class OrderController extends AbstractController
                     }
                 }
                 $session->set('cart', []);
+
+                $html = $this->renderView('mail/orderConfirmMail.html.twig', [
+                    'order' => $order,
+                ]);
+
+                $mail = (new Email())
+                    ->from('myShop@gmail.com')
+                    ->to($order->getEmail())
+                    ->subject('confirmation de la reception de la commande')
+                    ->html($html);
+
+                $this->mailer->send($mail);
                 return $this->redirectToRoute('order-ok-message');
             }
+
+            $payment = new StripePayment();
+
+            $shippingCost=$order->getCity()->getShippingCost();
+
+            $payment->startPayment($data, $shippingCost);
+
+            $stripeRedirectUrl = $payment->getStripeRedirectUrl();
+
+            return $this->redirect($stripeRedirectUrl);
         }
 
         return $this->render('order/index.html.twig', [
@@ -60,6 +93,7 @@ final class OrderController extends AbstractController
             'total' => $data['total'],
         ]);
     }
+
     //Cette fonction permette d'afficher les commandes a l'éditor et administrateur
     #[Route('/editor/order', name: 'app_orders_show')]
     public function getAllOrder(OrderRepository $orderRepository, Request $request, PaginatorInterface $paginator): Response

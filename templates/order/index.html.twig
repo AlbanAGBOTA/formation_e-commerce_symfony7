@@ -8,7 +8,7 @@
         <div class="col-8">
             <h1>Checkout</h1>
 
-            {{ form_start(form) }}
+            {{ form_start(form, {"attr":{'data-turbo':'false'}}) }}
             {{ form_widget(form) }} <br>
 
             <input type="submit" value="continuer" class="btn btn-outline-primary">
@@ -17,18 +17,16 @@
         </div>
         <div class="col-4"><br><br><br><br>
             <span>Montant à payer<br></span>
-            <h2>
-                <span id="card-price"> {{total}} </span>
-            </h2>
+            <h2><span id="card-price"> {{total}}</span> Euro </h2>
             <span>Frais de livraison </span>
             <h2>
                 <span id="shippingCost"></span>
-                FCFA
+                Euro
             </h2>
             <span>Montant total à payer<br></span>
             <h2>
                 <span class="total-price"></span>
-                fcfa
+                Euro
 
 
             </h2>

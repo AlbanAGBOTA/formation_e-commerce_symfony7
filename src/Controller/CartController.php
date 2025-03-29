@@ -19,24 +19,12 @@ final class CartController extends AbstractController
     {
         //Remplire le panier d'achat du produit
         $data = $cart->getCart($session);
+        //$cartProducts =$data['cart'];
+        // $product =[];
 
-
-
-
-
-        // $cart = $session->get('cart', []);
-        // $cartWhitData = [];
-        // foreach ($cart as $id => $quantity) {
-        //     $cartWhitData[] = [
-        //         'product' => $this->productRepository->find($id),
-        //         'quantity' => $quantity
-        //     ];
+        // foreach ($cartProducts as $value) {
+        //     # code...
         // }
-        // //Renvoyer a l'utilsateur le pri total
-        // $total = array_sum(array_map(function ($item) {
-        //     return $item['product']->getPrice() * $item['quantity'];
-        // }, $cartWhitData));
-        //dd($total);
 
         return $this->render('cart/index.html.twig', [
             'items' => $data['cart'],
