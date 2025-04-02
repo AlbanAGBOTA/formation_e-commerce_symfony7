@@ -42,51 +42,57 @@ final class OrderController extends AbstractController
         $form = $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($order->isPayOneDelivery()) {
-                if (!empty($data['total'])) {
-                    //dd($order);
-                    $order->setTotalPrice($data['total']);
-                    $order->setCreatedAt(new \DateTimeImmutable());
-                    $entityManager->persist($order);
+
+            //if ($order->isPayOneDelivery()) {
+            if (!empty($data['total'])) {
+                //dd($order);
+                $totalPrice = $data['total'] + $order->getCity()->getShippingCost();
+                $order->setTotalPrice($totalPrice);
+                $order->setCreatedAt(new \DateTimeImmutable());
+                $order->setIsPaymentCompleted(0);
+                $entityManager->persist($order);
+                $entityManager->flush();
+
+                foreach ($data['cart'] as $value) {
+                    $orderProduct = new OrderProduct();
+                    $orderProduct->setOrder($order);
+                    $orderProduct->setProduct($value['product']);
+                    $orderProduct->setQte($value['quantity']);
+                    $entityManager->persist($orderProduct);
                     $entityManager->flush();
+                    //dd($data['cart']);
 
-                    foreach ($data['cart'] as $value) {
-                        $orderProduct = new OrderProduct();
-                        $orderProduct->setOrder($order);
-                        $orderProduct->setProduct($value['product']);
-                        $orderProduct->setQte($value['quantity']);
-                        $entityManager->persist($orderProduct);
-                        $entityManager->flush();
-                        //dd($data['cart']);
-
-                    }
                 }
-                $session->set('cart', []);
 
-                $html = $this->renderView('mail/orderConfirmMail.html.twig', [
-                    'order' => $order,
-                ]);
+                if ($order->isPayOneDelivery()) {
+                    $session->set('cart', []);
+                    $html = $this->renderView('mail/orderConfirmMail.html.twig', [
+                        'order' => $order,
+                    ]);
 
-                $mail = (new Email())
-                    ->from('myShop@gmail.com')
-                    ->to($order->getEmail())
-                    ->subject('confirmation de la reception de la commande')
-                    ->html($html);
+                    $mail = (new Email())
+                        ->from('myShop@gmail.com')
+                        ->to($order->getEmail())
+                        ->subject('confirmation de la reception de la commande')
+                        ->html($html);
 
-                $this->mailer->send($mail);
-                return $this->redirectToRoute('order-ok-message');
+                    $this->mailer->send($mail);
+                    return $this->redirectToRoute('order-ok-message');
+                }
+
+                $payment = new StripePayment();
+
+                $shippingCost = $order->getCity()->getShippingCost();
+
+                $payment->startPayment($data, $shippingCost, $order->getId());
+
+                $stripeRedirectUrl = $payment->getStripeRedirectUrl();
+
+                return $this->redirect($stripeRedirectUrl);
             }
-
-            $payment = new StripePayment();
-
-            $shippingCost=$order->getCity()->getShippingCost();
-
-            $payment->startPayment($data, $shippingCost);
-
-            $stripeRedirectUrl = $payment->getStripeRedirectUrl();
-
-            return $this->redirect($stripeRedirectUrl);
+            // }
         }
+
 
         return $this->render('order/index.html.twig', [
             'form' => $form->createView(),
