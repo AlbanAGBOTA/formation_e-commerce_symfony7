@@ -101,10 +101,20 @@ final class OrderController extends AbstractController
     }
 
     //Cette fonction permette d'afficher les commandes a l'éditor et administrateur
-    #[Route('/editor/order', name: 'app_orders_show')]
-    public function getAllOrder(OrderRepository $orderRepository, Request $request, PaginatorInterface $paginator): Response
+    #[Route('/editor/order/{type}/', name: 'app_orders_show')]
+    public function getAllOrder($type, OrderRepository $orderRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $data = $orderRepository->findBy([], ['id' => 'DESC']);
+        if ($type == 'is-completed') {
+            $data = $orderRepository->findBy(['isCompleted' => 1], ['id' => 'DESC']);
+        } elseif ($type == 'pay-on-stripe-not-delivered') {
+            $data = $orderRepository->findBy(['isCompleted' => null, 'payOneDelivery' => 0, 'isPaymentCompleted' => 1], ['id' => 'DESC']);
+        } elseif ($type == 'pay-on-stripe-is-delivered') {
+            $data = $orderRepository->findBy(['isCompleted' => 1, 'payOneDelivery' => 0, 'isPaymentCompleted' => 1], ['id' => 'DESC']);
+        } elseif ($type == 'payer-livraison-et-non-livrer') {
+            $data = $orderRepository->findBy(['isCompleted' => null, 'payOneDelivery' => 1,], ['id' => 'DESC']);
+        } elseif ($type == 'payer-livraison-et-deja-livrer') {
+            $data = $orderRepository->findBy(['isCompleted' => 1, 'payOneDelivery' => 1,], ['id' => 'DESC']);
+        }
         //dd($order);
         $order = $paginator->paginate(
             $data,
@@ -119,28 +129,27 @@ final class OrderController extends AbstractController
 
 
     #[Route('/editor/order/{id}/is-completed/update', name: 'app_orders_is_completed_update')]
-    public function isCompletedUpdate($id, OrderRepository $orderRepository, EntityManagerInterface $entityManager): Response
+    public function isCompletedUpdate($id, OrderRepository $orderRepository, EntityManagerInterface $entityManager, Request $request): Response
     {
         $order = $orderRepository->find($id);
         $order->setIsCompleted(true);
         $entityManager->flush();
         $this->addFlash(type: 'success', message: 'votre modiffication effectuée');
 
-        return $this->redirectToRoute('app_orders_show');
+        return $this->redirect($request->headers->get('referer'));
     }
 
 
     #[Route('/editor/order/{id}/remove', name: 'app_orders_remove')]
-    public function removeOrder(Order $order, EntityManagerInterface $entityManager): Response
+    public function removeOrder(Order $order, EntityManagerInterface $entityManager, Request $request): Response
     {
         $entityManager->remove($order);
         $entityManager->flush();
 
         $this->addFlash(type: 'danger', message: 'votre commande a été supprimée');
 
-        return $this->redirectToRoute('app_orders_show');
+        return $this->redirect($request->headers->get('referer'));
     }
-
 
 
     #[Route('/order-ok-message', name: 'order-ok-message')]

@@ -44,7 +44,7 @@
             <li><a class="dropdown-item" href="{{path('app_product_index')}}">Produits</a></li>
             <li><hr class="dropdown-divider">
             {# <li><hr class="dropdown-divider"></li> #}
-            <li><a class="dropdown-item" href="{{path('app_orders_show')}}">Les Commandes</a></li>
+            {# <li><a class="dropdown-item" href="{{path('app_orders_show')}}">Les Commandes</a></li> #}
             <li><hr class="dropdown-divider">
             </li><li><a class="dropdown-item" href="{{path('app_user')}}">Utilisateur</a></li>
           </ul>
@@ -59,6 +59,27 @@
         </li>
 
         {% endif %}
+
+          {% if is_granted('ROLE_EDITOR') %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Commandes
+          </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{path('app_orders_show',{'type':'is-completed'})}}">Commande livrées</a></li>
+              <li><a class="dropdown-item" href="{{path('app_orders_show',{'type':'pay-on-stripe-not-delivered'})}}">Payer en ligne et non livrées</a></li>
+              <li><a class="dropdown-item" href="{{path('app_orders_show',{'type':'pay-on-stripe-is-delivered'})}}">Payer en ligne et livrées</a></li>
+              <li><a class="dropdown-item" href="{{path('app_orders_show',{'type':'payer-livraison-et-non-livrer'})}}">Payer a la livraison et non livrées</a></li>
+              <li><a class="dropdown-item" href="{{path('app_orders_show',{'type':'payer-livraison-et-deja-livrer'})}}">Payer a la livraison et déja livrées</a></li>
+
+
+
+            </ul>
+
+        </li>
+      {% endif %}
+
+
       </ul>
       <form class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
