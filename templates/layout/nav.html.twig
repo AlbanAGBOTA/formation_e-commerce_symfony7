@@ -71,18 +71,14 @@
               <li><a class="dropdown-item" href="{{path('app_orders_show',{'type':'pay-on-stripe-is-delivered'})}}">Payer en ligne et livrées</a></li>
               <li><a class="dropdown-item" href="{{path('app_orders_show',{'type':'payer-livraison-et-non-livrer'})}}">Payer a la livraison et non livrées</a></li>
               <li><a class="dropdown-item" href="{{path('app_orders_show',{'type':'payer-livraison-et-deja-livrer'})}}">Payer a la livraison et déja livrées</a></li>
-
-
-
             </ul>
-
         </li>
       {% endif %}
-
-
       </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+
+      <form data-turbo="false" method="GET" action="{{path('app_search_engine')}}" class="d-flex" role="search">
+
+        <input name="word" class="form-control me-2" type="search" placeholder="rechercher un produit" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>
     </div>
