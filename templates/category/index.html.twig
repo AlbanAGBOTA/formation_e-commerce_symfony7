@@ -1,31 +1,53 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Categories!{% endblock %}
+{% block title %}Catégories{% endblock %}
 
 {% block body %}
-<div class="container"><br><br>
-    <h2>Categories</h2><br><br>
-    {% include 'layout/_flash_message.html.twig'%}
-    <table class="table">
-        <tr>
-            <th>Id</th>
-            <th>Nom de la catégorie</th>
-            <th>Action</th>
-        </tr>
-        {% for category in categories %}
-        <tr>
-            <td>{{ category.id }}</td>
-            <td>{{ category.name }}</td>
-            <td>
-                <a class="btn btn-outline-primary" href="{{ path('app_category_update', {'id':category.id}) }}">Modifier</a> |
-                <a onclick="return confirm('voulez-vous supprimer cette catégorie')" class="btn btn-outline-danger" href="{{ path('app_category_delete', {'id':category.id}) }}">Supprimer</a>
-            </td>
-        </tr>
-        {% else %}
-        <p>Aucune categorie a afficher pour l'instant</p>
-        {% endfor %}
-    </table><br>
-    <a class="btn btn-outline-primary" href="{{ path('app_category_new') }}"> Ajouter une catégorie</a>
-</div>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Catégories</h1>
+        <a class="btn btn-outline-primary" href="{{ path('app_category_new') }}">
+            <i class="bi bi-plus-circle"></i> Nouvelle catégorie
+        </a>
+    </div>
 
+    {% include 'layout/_flash_message.html.twig' %}
+
+    {% if categories is not empty %}
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover table-bordered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 10%">ID</th>
+                            <th>Nom de la catégorie</th>
+                            <th class="text-center" style="width: 30%">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                            <tr>
+                                <td>{{ category.id }}</td>
+                                <td>{{ category.name }}</td>
+                                <td class="text-center">
+                                    <a class="btn btn-outline-success btn-sm" href="{{ path('app_category_update', {'id': category.id}) }}">
+                                        <i class="bi bi-pencil-square"></i> Modifier
+                                    </a>
+                                    <a class="btn btn-outline-danger btn-sm" href="{{ path('app_category_delete', {'id': category.id}) }}"
+                                       onclick="return confirm('Voulez-vous vraiment supprimer cette catégorie ?');">
+                                        <i class="bi bi-trash"></i> Supprimer
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center mt-4">
+            Aucune catégorie à afficher pour l’instant.
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

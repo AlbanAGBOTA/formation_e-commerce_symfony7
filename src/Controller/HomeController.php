@@ -15,13 +15,14 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class HomeController extends AbstractController
 {
+    /// Cette fonction permet d'afficher la page d'accueil avec la liste paginée des produits
     #[Route('/', name: 'app_home', methods: ['GET'])]
     public function index(ProductRepository $productRepository, CategoryRepository $categoryRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        // $search = $productRepository->searchEngine('produit');
-        // dd($search);
-        //Pour la pagination des pages
+        // Récupérer tous les produits depuis la base de données
         $data =  $productRepository->findBy([],);
+
+        // Paginer les résultats avec un maximum de 8 produits par page
         $products = $paginator->paginate(
             $data,
             $request->query->getInt('page', default: 1),
@@ -33,11 +34,11 @@ final class HomeController extends AbstractController
         ]);
     }
 
-    //Cette fonction permette  de séléctionner un produit spécifique
+    // Cette fonction permet de sélectionner et afficher un produit spécifique
     #[Route('/home/product/{id}/show', name: 'app_home_product_show', methods: ['GET'])]
     public function show(Product $product, ProductRepository $productRepository, CategoryRepository $categoryRepository): Response
     {
-        //Afficher les cinq(05) derniers produits
+        // Récupérer les cinq (05) derniers produits ajoutés
         $dernierProduit = $productRepository->findBy([], ['id' => 'DESC'], 5);
         return $this->render('home/show.html.twig', [
             'product' => $product,
@@ -45,12 +46,16 @@ final class HomeController extends AbstractController
             'categories' => $categoryRepository->findAll()
         ]);
     }
-    // //Cette fonction permette de filtrer les produits
+
+
+    // Cette fonction permet de filtrer les produits par sous-catégorie
     #[Route('/home/product/subCategory/{id}/filter', name: 'app_home_product_filter', methods: ['GET'])]
     public function filter($id, SubCategoryRepository $subCategoryRepository, CategoryRepository $categoryRepository): Response
     {
+        // Récupérer les produits appartenant à la sous-catégorie sélectionnée
         $products = $subCategoryRepository->find($id)->getProducts();
-        //Recuperer le nom du sous categori
+
+        // Récupérer les informations de la sous-catégorie
         $subCategory = $subCategoryRepository->find($id);
 
         return $this->render('home/filter.html.twig', [

@@ -1,73 +1,107 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+<div class="container py-5">
 
-<div class="container">
-    <h1>Les commandes</h1>
-    {% include 'layout/_flash_message.html.twig' %}
+    <div class="mb-4">
+        <h2 class="mb-1">Liste des commandes</h2>
+        <p class="text-muted">Visualisez les commandes de vos clients</p>
+        {% include 'layout/_flash_message.html.twig' %}
+    </div>
 
     {% for order in orders %}
-    <h3>Commande n°:{{order.id}}</h3>
-    {% if order.isCompleted == true %}
-    <h6 class="text text-danger">Commande livrée</h6>
+        <div class="card mb-5 shadow-sm">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">Commande n°{{ order.id }}</h5>
+                    {% if order.isCompleted %}
+                        <span class="badge bg-success">Commande livrée</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">Non livrée le {{ order.createdAt|date('d/m/Y H:i') }}</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <a href="{{ path('app_facture', {'id': order.id}) }}" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-printer"></i> Imprimer la facture
+                    </a>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <h6 class="text-primary">Informations du client</h6>
+                <table class="table table-sm table-bordered mb-4">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Téléphone</th>
+                            <th>Adresse</th>
+                            <th>Ville</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ order.lastName }}</td>
+                            <td>{{ order.firstName }}</td>
+                            <td>{{ order.phone }}</td>
+                            <td>{{ order.adresse }}</td>
+                            <td>{{ order.city.name }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h6 class="text-primary">Détail de la commande</h6>
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Image</th>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Prix total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in order.orderProducts %}
+                        <tr>
+                            <td><img src="{{ asset('uploads/images/' ~ product.product.image) }}" alt="Image produit" style="width: 70px;" class="rounded border" /></td>
+                            <td>{{ product.product.name }}</td>
+                            <td>{{ product.product.description|slice(0, 100) ~ '...' }}</td>
+                            <td>{{ product.product.price }} €</td>
+                            <td>{{ product.qte }}</td>
+                            <td>{{ product.product.price * product.qte }} €</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="mt-3">
+                    <p><strong>Frais de livraison :</strong> {{ order.city.shippingCost }} fcfa</p>
+                    <h5 class="text-dark"><strong>Total à payer :</strong> {{ order.totalPrice }} fcfa</h5>
+                </div>
+
+                <div class="d-flex gap-2 mt-3 flex-wrap">
+                    {% if not order.isCompleted %}
+                        <a href="{{ path('app_orders_is_completed_update', {'id': order.id}) }}" class="btn btn-outline-primary">
+                            <i class="bi bi-check-circle"></i> Marquer comme livrée
+                        </a>
+                    {% endif %}
+                    <a onclick="return confirm('Voulez-vous vraiment supprimer cette commande ?')" 
+                       href="{{ path('app_orders_remove', {'id': order.id}) }}" 
+                       class="btn btn-outline-danger">
+                        <i class="bi bi-trash"></i> Supprimer
+                    </a>
+                </div>
+            </div>
+        </div>
     {% else %}
-    <h4 class="text text-danger">Commande non livrée : {{order.createdAt|date}}</h4>
-
-    {% endif %}
-    <span>Informations du clients</span>
-    <table class="table table-bordered">
-        <tr>
-            <th>Nom</th>
-            <th>Prenom</th>
-            <th>Téléphone</th>
-            <th>Adrésse</th>
-            <th>Ville</th>
-        </tr>
-
-        <tr>
-            <td>{{order.firstName}}</td>
-            <td>{{order.lastName}}</td>
-            <td>{{order.phone}}</td>
-            <td>{{order.adresse}}</td>
-            <td>{{order.city.name}}</td>
-        </tr>
-    </table>
-    <span>Corps de la commande</span>
-    <table class="table table-bordered">
-        <tr>
-            <th>Image du produit</th>
-            <th>Nom du produit</th>
-            <th>Description</th>
-            <th>Prix unitaire</th>
-            <th>Quantité</th>
-            <th>Prix total</th>
-        </tr>
-        {% for product in order.orderProducts %}
-        <tr>
-            <td> <img style="width: 80px" src="{{ asset('uploads/images/'~ product.product.image) }}" alt=""> </td>
-            <td>{{product.product.name}}</td>
-            <td>{{product.product.description|slice(0,200)}}</td>
-            <td>{{product.product.price}}</td>
-            <td>{{product.qte}}</td>
-            <td>{{product.product.price * product.qte}}</td>
-        </tr>
-
-        {% endfor %}
-    </table>
-    <span>Frais de livraison : {{order.city.shippingCost}} fcfa</span>
-    <h5>Total à payer : {{order.totalPrice}} fcfa</h5>
-        <a href="{{path('app_facture',{'id': order.id})}}" class="btn btn-outline-success">Imprimer la facture</a>
-
-    {% if order.isCompleted != true %}
-        <a href="{{path('app_orders_is_completed_update',{'id': order.id})}}" class="btn btn-outline-primary col-2 m-lg-1">Marquer comme livrée</a>
-    {% endif %}
-        <a onclick=" return confirm('voulez vous vraiment supprimer cette commande ?')" href="{{path('app_orders_remove', {'id': order.id})}}" class="btn btn-outline-danger col-2 m-lg-1">Supprimer la commande</a>
-    <br><br>
+        <div class="alert alert-info">Aucune commande disponible pour le moment.</div>
     {% endfor %}
 
-    {{ knp_pagination_render(orders, 'layout/pagination_template.html.twig') }}
-
-
+    <div class="mt-4">
+        {{ knp_pagination_render(orders, 'layout/pagination_template.html.twig') }}
+    </div>
 </div>
-
 {% endblock %}
+

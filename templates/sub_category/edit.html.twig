@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}Edit SubCategory{% endblock %}
 
@@ -12,4 +12,34 @@
 
         {{ include('sub_category/_delete_form.html.twig') }}
 </div>
+{% endblock %} #}
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier une sous-catégorie{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Modifier la sous-catégorie</h2>
+            <p class="text-muted">Formulaire de mise à jour des informations</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{{ path('app_sub_category_index') }}">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {{ include('sub_category/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        {{ include('sub_category/_delete_form.html.twig') }}
+    </div>
+</div>
 {% endblock %}
+

@@ -21,11 +21,11 @@ final class StripeController extends AbstractController
     #[Route('/pay/success', name: 'app_stripe_success')]
     public function success(Cart $cart, SessionInterface $session): Response
     {
-        // Récupérer le panier d'achat depuis la session
+        //Recuperer le panier des produits
         $session->set('cart', []);
 
         return $this->render('stripe/index.html.twig', [
-            'controller_name' => 'StripeController',
+            'status' => 'success',
         ]);
     }
 
@@ -33,7 +33,7 @@ final class StripeController extends AbstractController
     public function cancel(): Response
     {
         return $this->render('stripe/index.html.twig', [
-            'controller_name' => 'StripeController',
+            'status' => 'cancel',
         ]);
     }
 

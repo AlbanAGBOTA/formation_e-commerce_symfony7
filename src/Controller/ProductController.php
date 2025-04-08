@@ -21,6 +21,7 @@ use App\Form\ProductUpdateType;
 
 use function PHPSTORM_META\type;
 
+// Affiche la liste des produits
 #[Route('/editor/product')]
 final class ProductController extends AbstractController
 {
@@ -32,6 +33,8 @@ final class ProductController extends AbstractController
         ]);
     }
 
+
+    // Ajout d'un nouveau produit
     #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
@@ -39,6 +42,7 @@ final class ProductController extends AbstractController
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
+        // Gestion de l'image du produit
         if ($form->isSubmitted() && $form->isValid()) {
             //permet de recuperer l'image
             $image = $form->get('image')->getData();
@@ -65,7 +69,7 @@ final class ProductController extends AbstractController
             $entityManager->persist($product);
             $entityManager->flush();
 
-            //Cet bloc permet la gestion du stock de l'historique des produits
+            // Enregistrement de l'historique du stock
             $stockHistory = new AddProductHistory(); //cette variable stcke historique des produits
             $stockHistory->setQte($product->getStock()); // on recupere historique des produits
             $stockHistory->setProduct($product); //inserer le produit
@@ -83,6 +87,7 @@ final class ProductController extends AbstractController
         ]);
     }
 
+    // Affiche les détails d'un produit spécifique
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
     public function show(Product $product): Response
     {
@@ -91,6 +96,7 @@ final class ProductController extends AbstractController
         ]);
     }
 
+    // Modification d'un produit existant
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Product $product, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
@@ -99,6 +105,7 @@ final class ProductController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            // Gestion de l'image mise à jour
             $image = $form->get('image')->getData();
             //virifier si l'image existe
             if ($image) {
@@ -132,6 +139,7 @@ final class ProductController extends AbstractController
         ]);
     }
 
+    // Suppression d'un produit
     #[Route('/{id}', name: 'app_product_delete', methods: ['POST'])]
     public function delete(Request $request, Product $product, EntityManagerInterface $entityManager): Response
     {
@@ -145,7 +153,7 @@ final class ProductController extends AbstractController
         return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    // cette function permet de stoker historique des stocks de produit
+    // Ajout de stock pour un produit
     #[Route('/add/product/{id}/stock', name: 'app_product_stock_add', methods: ['POST', 'GET'])]
     public function addStock($id, EntityManagerInterface $entityManager, Request $request, ProductRepository $productRepository): Response
     {
@@ -156,7 +164,7 @@ final class ProductController extends AbstractController
         //Recupérer le produit
         $product = $productRepository->find($id);
 
-        //soumettrele formulair
+        //soumettre le formulair
         if ($form->isSubmitted() && $form->isValid()) {
 
             //une petite verification
@@ -187,7 +195,9 @@ final class ProductController extends AbstractController
             ],
         );
     }
-    //Cette function permet de recuperer l'historique des stoks
+
+
+    // Récupération de l'historique des stocks d'un produit
     #[Route('/add/product/{id}/stock/history', name: 'app_product_stock_add_history', methods: ['GET'])]
     public function productAddHistory($id, ProductRepository $productRepository, AddProductHistoryRepository $addProductHistory): Response
     {

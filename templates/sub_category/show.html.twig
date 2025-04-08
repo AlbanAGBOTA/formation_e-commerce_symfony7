@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}SubCategory{% endblock %}
 
@@ -19,10 +19,61 @@
                 </tbody>
             </table>
 
-            <a href="{{ path('app_sub_category_index') }}">back to list</a>
+             <div class="d-flex justify-content-start gap-2 mt-3">
+                <a class="btn btn-outline-primary" href="{{ path('app_sub_category_index') }}">Aller sure la liste</a>
 
-            <a href="{{ path('app_sub_category_edit', {'id': sub_category.id}) }}">edit</a>
+                <a class="btn btn-outline-success" href="{{ path('app_sub_category_edit', {'id': sub_category.id}) }}">Modifier</a>
 
-            {{ include('sub_category/_delete_form.html.twig') }}
+                 {{ include('sub_category/_delete_form.html.twig') }}
+            </div>
     </div>
+{% endblock %} #}
+
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la sous-catégorie{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Détails de la sous-catégorie</h2>
+            <p class="text-muted">Informations de la sous-catégorie sélectionnée</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="{{ path('app_sub_category_index') }}">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-bordered mb-0">
+                <tbody>
+                    <tr>
+                        <th style="width: 25%">ID</th>
+                        <td>{{ sub_category.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nom</th>
+                        <td>{{ sub_category.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Catégorie</th>
+                        <td>{{ sub_category.category.name }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+        <a class="btn btn-outline-success" href="{{ path('app_sub_category_edit', {'id': sub_category.id}) }}">
+            <i class="bi bi-pencil-square"></i> Modifier
+        </a>
+
+        {{ include('sub_category/_delete_form.html.twig') }}
+    </div>
+</div>
 {% endblock %}

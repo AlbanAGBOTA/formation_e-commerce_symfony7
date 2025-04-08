@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}SubCategory index{% endblock %}
 
@@ -23,7 +23,7 @@
                 <td>{{sub_category.category.name}}</td>
                 <td>
                     <a class="btn btn-outline-primary" href="{{ path('app_sub_category_show', {'id': sub_category.id}) }}">show</a>
-                    <a class="btn btn-danger" href="{{ path('app_sub_category_edit', {'id': sub_category.id}) }}">edit</a>
+                    <a class="btn btn-outline-success" href="{{ path('app_sub_category_edit', {'id': sub_category.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}
@@ -35,5 +35,62 @@
     </table>
 
     <a class="btn btn-outline-primary" href="{{ path('app_sub_category_new') }}">Create new</a>
+</div>
+{% endblock %} #}
+
+
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Sous-catégories{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Sous-catégories</h1>
+        <a class="btn btn-outline-primary" href="{{ path('app_sub_category_new') }}">
+            <i class="bi bi-plus-circle"></i> Nouvelle sous-catégorie
+        </a>
+    </div>
+
+    {% include 'layout/_flash_message.html.twig' %}
+
+    {% if sub_categories is not empty %}
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover table-bordered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 10%;">ID</th>
+                            <th>Nom</th>
+                            <th>Catégorie associée</th>
+                            <th class="text-center" style="width: 25%;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub_category in sub_categories %}
+                            <tr>
+                                <td>{{ sub_category.id }}</td>
+                                <td>{{ sub_category.name }}</td>
+                                <td>{{ sub_category.category.name }}</td>
+                                <td class="text-center">
+                                    <a class="btn btn-outline-info btn-sm" href="{{ path('app_sub_category_show', {'id': sub_category.id}) }}">
+                                        <i class="bi bi-eye"></i> Voir
+                                    </a>
+                                    <a class="btn btn-outline-success btn-sm" href="{{ path('app_sub_category_edit', {'id': sub_category.id}) }}">
+                                        <i class="bi bi-pencil-square"></i> Modifier
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center mt-4">
+            Aucune sous-catégorie disponible pour le moment.
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

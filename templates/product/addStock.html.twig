@@ -8,7 +8,7 @@
         <h1>Ajouter le stock pour: {{product.name}}</h1><br><br>
         {% include 'layout/_flash_message.html.twig'%}
         {{form_start(form)}}
-            {{ form_row(form.qte, {'attr':{"class":"form form-control"}}) }}<br>
+            {{ form_row(form.qte, {attr:{"class":"form form-control", 'data-turbo':'false'}}) }}<br>
 
             <input type="submit" class="btn btn-success btn btn-block" >
 

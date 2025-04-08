@@ -4,12 +4,12 @@
 
 {% block body %}
 <div class="container">
-    <h1>Resultat de la recherche du mot : {{ word }} </h1>
+    <h1>Resultat de la recherche du produit : {{ word }} </h1>
     <div class="row">
         {% for product in products %}
         <div class="col-md-3 mt-4">
-            <div class="card" style="width: 18rem;">
-                <img  src="{{ asset('uploads/images/'~ product.image) }}" class="card-img-top" alt="...">
+            <div class="card h-100" style="width: 18rem;">
+                <img  src="{{ asset('uploads/images/'~ product.image) }}" class="card-img-top" alt="..." style="object-fit: cover; height: 200px;">
                 <div class="card-body">
                     <a style="text-decoration : none; color : green" href=" {{ path('app_home_product_show', {'id':product.id} ) }} ">
                         <h5 class="card-title">{{product.name}}</h5>

@@ -18,25 +18,30 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
     {
+        // Création d'un nouvel utilisateur
         $user = new User();
+
+        // Création du formulaire d'inscription et association avec l'entité User
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
+        // Vérification si le formulaire a été soumis et est valide
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
+            // Hashage du mot de passe avant de l'enregistrer
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
+            // Persistance de l'utilisateur en base de données
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
-
+            // Connexion automatique de l'utilisateur après l'inscription
             return $security->login($user, SecuriteAuthentificationAuthenticator::class, 'main');
         }
 
+        // Affichage du formulaire d'inscription si non soumis ou invalide
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);

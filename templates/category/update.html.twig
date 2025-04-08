@@ -5,7 +5,7 @@
     <div class="form">
        <br>
        <h2>Modifier une catégorie</h2><br>
-       {{ form_start(form) }}
+       {{ form_start(form, {"attr":{'data-turbo':'false'}}) }}
        {{ form_row(form.name, {'attr':{'class':'form form-control'}}) }}
        <br>
        <input type="submit" value="Modifier" class="btn btn-primary">
